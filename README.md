@@ -38,6 +38,10 @@ $ docker-compose up -d    # 创建并且后台运行方式启动所有容器
 4. 在浏览器中访问：`http://localhost`
 PHP代码放在nginx中配置的文件目录`./www/localhost/index.php`。
 
+5.(特殊使用) nginx使用宿主机应用, php+fpm使用docker内部。
+需要注意nginx中server或location配置的root都是针对php+fpm容器路径而言的, 
+php文件也是放入php+fpm容器内才能正常运行, 因为请求已经通过9000转发进入容器内部处理了, 容器需要这些文件。
+
 ## 3.PHP和扩展
 ### 3.1 切换Nginx使用的PHP版本
 首先，需要启动其他版本的PHP，比如PHP5.4，那就先在`docker-compose.yml`文件中删除PHP5.4前面的注释，再启动PHP5.4容器。
