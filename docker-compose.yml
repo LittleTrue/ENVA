@@ -233,7 +233,7 @@ services:
       - default
 
   ## 镜像：kafka https://hub.docker.com/r/wurstmeister/kafka/tags
-  ## 节点1
+  ## 节点1 -- 可配置多个节点
   kafka:
     image: wurstmeister/kafka:${KAFKA_VERSION}
     container_name: kafka
@@ -259,6 +259,7 @@ services:
       - default
 
   ## 镜像：开源的web管理kafka集群的界面
+  ## 访问web界面 add cluster 输入 KAFKA_ZOOKEEPER_CONNECT 进行连接获取kafuka信息
   kafka-manager:  
     image: sheepkiller/kafka-manager
     container_name: kafka-manager
