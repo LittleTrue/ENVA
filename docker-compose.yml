@@ -28,7 +28,6 @@ services:
       - ${NGINX_LOG_DIR}:/var/log/nginx/:rw
     environment:
       TZ: "$TZ"
-    restart: always
     networks:
       - default
 
@@ -52,7 +51,6 @@ services:
       - ${PHP_FPM_CONF_FILE}:/usr/local/etc/php-fpm.d/www.conf:rw
       - ${PHP_LOG_DIR}:/var/log/php
       - ${DATA_DIR}/composer:/tmp/composer
-    restart: always
     cap_add:
       - SYS_PTRACE
     networks:
@@ -222,6 +220,56 @@ services:
 #    networks:
 #          - default
 
+  ## 镜像：kafka依赖的zooker
+  zookeeper:
+    image: zookeeper:${ZOOKEEPER_VERSION}
+    container_name: zookeeper
+    ports: # 2000开头的端口在windows容易被应用占用
+      - "${ZOOKEEPER_PORT}:2181"
+    volumes:
+      - ${LOG_DIR}/zookeeper:/datalog
+      - ${DATA_DIR}/zookeeper:/data
+    networks:
+      - default
+
+  ## 镜像：kafka https://hub.docker.com/r/wurstmeister/kafka/tags
+  ## 节点1
+  kafka:
+    image: wurstmeister/kafka:${KAFKA_VERSION}
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    volumes:
+      - ${DATA_DIR}/kafka/localtime:/etc/localtime
+      - ${LOG_DIR}/kafka:/kafka/logs
+    ports:
+      - "${KAFKA_PORT}:9092"
+    environment:
+      # 用ifconfig查询本机ip, 192.168.31.49为我本机宿主机ip用于容器间通信
+      KAFKA_BROKER_ID: 1
+      # kafka的broker将监听地址表，只有与该ip匹配正确的客户端能成功连接到kafka
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      # 指向Broker的可用地址列表，kafka 将会在初始连接时将地址发送给client
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://192.168.31.49:${KAFKA_PORT}
+      KAFKA_ADVERTISED_HOST_NAME: 192.168.31.49
+      KAFKA_ZOOKEEPER_CONNECT: 192.168.31.49:${ZOOKEEPER_PORT}
+      KAFKA_ADVERTISED_PORT: ${KAFKA_PORT}
+      KAFKA_LOG_DIRS: "/kafka/logs"
+    networks:
+      - default
+
+  ## 镜像：开源的web管理kafka集群的界面
+  kafka-manager:  
+    image: sheepkiller/kafka-manager
+    container_name: kafka-manager
+    environment:
+        ZK_HOSTS: zookeeper
+    ports:
+      - "${KAFKAMANAGER_PORT}:9000"
+    networks:
+      - default
+
+  ## MYSQL管理界面
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest
     container_name: phpmyadmin
