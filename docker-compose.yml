@@ -245,14 +245,14 @@ services:
     ports:
       - "${KAFKA_PORT}:9092"
     environment:
-      # 用ifconfig查询本机ip, 192.168.31.49为我本机宿主机ip用于容器间通信
       KAFKA_BROKER_ID: 1
       # kafka的broker将监听地址表，只有与该ip匹配正确的客户端能成功连接到kafka
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
       # 指向Broker的可用地址列表，kafka 将会在初始连接时将地址发送给client
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://192.168.31.49:${KAFKA_PORT}
-      KAFKA_ADVERTISED_HOST_NAME: 192.168.31.49
-      KAFKA_ZOOKEEPER_CONNECT: 192.168.31.49:${ZOOKEEPER_PORT}
+      # DOCKER_CONNECT_IPkafka基于宿主机ip与zooker通信
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://${DOCKER_CONNECT_IP}:${KAFKA_PORT}
+      KAFKA_ADVERTISED_HOST_NAME: ${DOCKER_CONNECT_IP}
+      KAFKA_ZOOKEEPER_CONNECT: ${DOCKER_CONNECT_IP}:${ZOOKEEPER_PORT}
       KAFKA_ADVERTISED_PORT: ${KAFKA_PORT}
       KAFKA_LOG_DIRS: "/kafka/logs"
     networks:
