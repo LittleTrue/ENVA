@@ -50,7 +50,7 @@ RUN set -ex \
     && echo "memory_limit=1G" > /etc/php7/conf.d/00_default.ini \
     && echo "log_errors = On" > /etc/php7/conf.d/00_default.ini\
     && echo "display_errors = 1" > /etc/php7/conf.d/00_default.ini\
-    && echo "error_log = /opt/www/php.log" > /etc/php7/conf.d/00_default.ini\
+    && echo "error_log = /var/log/php/php.log" > /etc/php7/conf.d/00_default.ini\
     && echo "opcache.enable_cli = 'On'" >> /etc/php7/conf.d/00_opcache.ini \
     && echo "extension=swoole.so" > /etc/php7/conf.d/50_swoole.ini \
     && echo "swoole.use_shortname = 'Off'" >> /etc/php7/conf.d/50_swoole.ini \

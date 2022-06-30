@@ -74,7 +74,7 @@ services:
     volumes:
       - ${SOURCE_DIR}:/opt/www/:rw
       - ${SWOOLE_PHP_PHP_CONF_FILE}:/etc/php7/php.ini:ro
-      - ${SWOOLE_PHP_LOG_DIR}:/var/log/
+      - ${SWOOLE_PHP_LOG_DIR}:/var/log/php
     networks:
       - default
     entrypoint: ['/bin/bash']
