@@ -42,9 +42,8 @@ services:
         TZ: "$TZ"
     container_name: php
     ports:
-      # 9000 -- PHP-FPM服务默认暴露给宿主机使用 , 9501配置预留给swoole等通信引擎使用
+      # 9000 -- PHP-FPM服务默认暴露给宿主机使用 
       - "9000:9000"
-      - "${PHP_SWOOLE_PORT}:9501"
     volumes:
       - ${SOURCE_DIR}:/www/:rw
       - ${PHP_PHP_CONF_FILE}:/usr/local/etc/php/php.ini:ro
@@ -56,6 +55,30 @@ services:
     networks:
       - default
 
+  swoole_php:
+    # 基于swoole的框架的运行容器搭建
+    build:
+      context: ./services/swoole_php
+      args:
+        # PHP在构建镜像中固定7.4, 使用hyperf/hyperf:7.4-alpine-v3.14-base
+        SWOOLE_VERSION: ${SWOOLE_VERSION}
+        SWOOLE_PHP_COMPOSER_VERSION: ${SWOOLE_PHP_COMPOSER_VERSION}
+        TZ: "$TZ"
+    # stdin_open / tty 交互式进行, 进入后再根据需要编辑容器/操作特定项目/行为, 防止无常驻自动退出
+    stdin_open: true
+    tty: true
+    container_name: swoole_php
+    ports:
+      # 9501 用于swoole等网络框架
+      - "${SWOOLE_PHP_PROTS}:9501"
+    volumes:
+      - ${SOURCE_DIR}:/opt/www/:rw
+      - ${SWOOLE_PHP_PHP_CONF_FILE}:/etc/php7/php.ini:ro
+      - ${SWOOLE_PHP_LOG_DIR}:/var/log/
+    networks:
+      - default
+    entrypoint: ['/bin/bash']
+
   #  php80:
   #    build:
   #      context: ./services/php80
@@ -66,9 +89,8 @@ services:
   #        TZ: "$TZ"
   #    container_name: php80
   #    ports:
-  #      # 9000 -- PHP-FPM服务默认暴露给宿主机使用 , 9501配置预留给swoole等通信引擎使用
+  #      # 9000 -- PHP-FPM服务默认暴露给宿主机使用 
   #      - "9000:9000"
-  #      - "${PHP_SWOOLE_PORT}:9501"
   #    volumes:
   #      - ${SOURCE_DIR}:/www/:rw
   #      - ${PHP80_PHP_CONF_FILE}:/usr/local/etc/php/php.ini:ro
@@ -91,9 +113,8 @@ services:
   #        TZ: "$TZ"
   #    container_name: php56
   #    ports:
-  #      # 9000 -- PHP-FPM服务默认暴露给宿主机使用 , 9501配置预留给swoole等通信引擎使用
+  #      # 9000 -- PHP-FPM服务默认暴露给宿主机使用 
   #      - "9000:9000"
-  #      - "${PHP_SWOOLE_PORT}:9501"
   #    volumes:
   #      - ${SOURCE_DIR}:/www/:rw
   #      - ${PHP56_PHP_CONF_FILE}:/usr/local/etc/php/php.ini:ro
