@@ -1,8 +1,20 @@
 version: "3"
-# 容器内连接宿主机相关服务
+# 一、容器内连接宿主机相关服务
 # 1.liunx宿主机执行ifconfig docker0/ 得到inet就是要连接的ip地址
 # -- windows宿主机需要配置路由: https://blog.csdn.net/qq_33668030/article/details/102477820
 # 2.根据第一步得到的ip地址进行容器与宿主机的连接
+# 如果需要KAFUKA service, 那么则env中的DOCKER_CONNECT_IP需要按1/2步骤配置一下.
+
+# 二 目录和构建(需要的服务解开#)
+# DATA目录保留部分存储型应用的数据, 如果想要复用MY/RD的数据库, 记得把DATA目录备份了。
+# LOG目录保存日志, 并且volumes需要处理好各个容器的log。
+# WWW目录用于部分WEB/通信引擎容器将项目关联进去运行。
+# 构建过程: 
+# Windows下CD到本项目根目录
+# docker-compose build -- 构建所有
+# docker-compose up  -- 构建所有并运行
+# docker-compose up <指定的服务名> <指定的服务名> <指定的服务名> --构建部分并运行
+# docker-compose up --force-recreate --no-deps -d <指定的服务名>  --重新构建并运行
 
 services:
 #  # NGINX一般不推荐在容器中运行, 代理和网络多一层比较麻烦, 如果所在环境不支持NGINX特定版本安装则可以考虑
@@ -56,6 +68,20 @@ services:
 #      - SYS_PTRACE
 #    networks:
 #      - default
+
+#  # NODE一般不推荐容器中运行, 切换版本和安装都简单, 没必要...
+#  node:
+#    image: node:${NODE_VERSION}
+#    environment:
+#      - NODE_ENV=production
+#    volumes:
+#      - ${SOURCE_DIR}:/www/:rw
+#    expose:
+#      - "8081"
+#    networks:
+#      - default
+#    stdin_open: true
+#    tty: true
 
   # 基于swoole的框架的运行容器搭建
   swoole_php:
@@ -215,6 +241,36 @@ services:
     networks:
       - default
 
+#  mongodb:
+#    image: mongo:${MONGODB_VERSION}
+#    container_name: mongodb
+#    environment:
+#        MONGO_INITDB_ROOT_USERNAME: "${MONGODB_INITDB_ROOT_USERNAME}"
+#        MONGO_INITDB_ROOT_PASSWORD: "${MONGODB_INITDB_ROOT_PASSWORD}"
+#        TZ: "$TZ"
+#    volumes:
+#      - ${DATA_DIR}/mongo:/data/db:rw
+#      - ${DATA_DIR}/mongo_key:/mongo:rw
+#    ports:
+#       - "${MONGODB_HOST_PORT}:27017"
+#    networks:
+#       - default
+#    command:
+#       --auth
+
+#  # mongodb的管控界面
+#  adminmongo:
+#    image: mrvautin/adminmongo
+#    container_name: adminmongo
+#    ports:
+#      - "${ADMINMONGO_HOST_PORT}:1234"
+#    environment:
+#      - HOST=0.0.0.0
+#      - DB_HOST=mongodb
+#      - DB_PORT=27017
+#    networks:
+#      - default
+
 #  memcached:
 #    image: memcached:${MEMCACHED_VERSION}
 #    container_name: memcached
@@ -304,6 +360,7 @@ services:
       - ${PHPMYADMIN_PHP_CONF_FILE}:/usr/local/etc/php/conf.d/php-phpmyadmin.ini:ro
     networks:
       - default
+    restart: always
     environment:
       - PMA_HOST=mysql
       - PMA_PORT=3306
@@ -316,39 +373,11 @@ services:
       - "${REDISMYADMIN_HOST_PORT}:80"
     networks:
       - default
+    restart: always
     environment:
       - REDIS_1_HOST=redis
       - REDIS_1_PORT=6379
       - TZ=$TZ
-
-#  mongodb:
-#    image: mongo:${MONGODB_VERSION}
-#    container_name: mongodb
-#    environment:
-#        MONGO_INITDB_ROOT_USERNAME: "${MONGODB_INITDB_ROOT_USERNAME}"
-#        MONGO_INITDB_ROOT_PASSWORD: "${MONGODB_INITDB_ROOT_PASSWORD}"
-#        TZ: "$TZ"
-#    volumes:
-#      - ${DATA_DIR}/mongo:/data/db:rw
-#      - ${DATA_DIR}/mongo_key:/mongo:rw
-#    ports:
-#       - "${MONGODB_HOST_PORT}:27017"
-#    networks:
-#       - default
-#    command:
-#       --auth
-
-#  adminmongo:
-#    image: mrvautin/adminmongo
-#    container_name: adminmongo
-#    ports:
-#      - "${ADMINMONGO_HOST_PORT}:1234"
-#    environment:
-#      - HOST=0.0.0.0
-#      - DB_HOST=mongodb
-#      - DB_PORT=27017
-#    networks:
-#      - default
 
   # ES 相关应用搭建
   cerebro:
@@ -419,20 +448,7 @@ services:
 #      - "${LOGSTASH_HOST_PORT_C}:9600"
 #      - "${LOGSTASH_HOST_PORT_S}:5044"
 
-#  node:
-#    image: node:${NODE_VERSION}
-#    environment:
-#      - NODE_ENV=production
-#    volumes:
-#      - ${SOURCE_DIR}:/www/:rw
-#    expose:
-#      - "8081"
-#    networks:
-#      - default
-#    stdin_open: true
-#    tty: true
-
-
+#  # 应用状态统一管理工具, 拉起挂掉的应用, 开发环境不需像线上一样严格.. 不推荐使用
 #  supervisor:
 #    build:
 #      context: ./services/supervisor
