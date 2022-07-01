@@ -1,4 +1,6 @@
-DNMP（Docker + Nginx + MySQL + PHP7/5 + Redis）是一款全功能的**LNMP一键安装程序**。
+ENVA (ENVironment  Arrange ) 环境集中安排中心
+
+是一款基于DOCKER的全功能的应用程序一键安装程序
 
 ## 1.项目总体目录结构
 
@@ -42,6 +44,8 @@ PHP代码放在nginx中配置的文件目录`./www/localhost/index.php`。
 需要注意nginx中server或location配置的root都是针对php+fpm容器路径而言的, 
 php文件也是放入php+fpm容器内才能正常运行, 因为请求已经通过9000转发进入容器内部处理了, 容器需要这些文件。
 
+
+
 ## 3.PHP和扩展
 ### 3.1 切换Nginx使用的PHP版本
 首先，需要启动其他版本的PHP，比如PHP5.4，那就先在`docker-compose.yml`文件中删除PHP5.4前面的注释，再启动PHP5.4容器。
@@ -62,60 +66,9 @@ $ docker exec -it nginx nginx -s reload
 ```
 这里两个`nginx`，第一个是容器名，第二个是容器中的`nginx`程序。
 
-
-### 3.2 安装PHP扩展
-PHP的很多功能都是通过扩展实现，而安装扩展是一个略费时间的过程，
-所以，除PHP内置扩展外，在`env.sample`文件中我们仅默认安装少量扩展，
-如果要安装更多扩展，请打开你的`.env`文件修改如下的PHP配置，
-增加需要的PHP扩展：
-```bash
-PHP_EXTENSIONS=pdo_mysql,opcache,redis       # PHP 要安装的扩展列表，英文逗号隔开
-PHP54_EXTENSIONS=opcache,redis                 # PHP 5.4要安装的扩展列表，英文逗号隔开
-```
-然后重新build PHP镜像。
-```bash
-docker-compose build php
-```
-可用的扩展请看同文件的`env.sample`注释块说明。
-
-### 3.3 使用composer
-**方法1：liunx主机中基于bashrc使用composer命令**
-1. 确定composer缓存的路径。比如，我的dnmp下载在`~/dnmp`目录，那composer的缓存路径就是`~/dnmp/data/composer`。
-2. 参考[bash.alias.sample](bash.alias.sample)示例文件，将对应 php composer 函数拷贝到主机的 `~/.bashrc`文件。
-    > 这里需要注意的是，示例文件中的`~/dnmp/data/composer`目录需是第一步确定的目录。
-3. 让文件起效：
-    ```bash
-    source ~/.bashrc
-    ```
-4. 在主机的任何目录下就能用composer了：
-    ```bash
-    cd ~/dnmp/www/
-    composer create-project yeszao/fastphp project --no-dev
-    ```
-5. （可选）第一次使用 composer 会在 `~/dnmp/data/composer` 目录下生成一个**config.json**文件，可以在这个文件中指定国内仓库，例如：
-    ```json
-    {
-        "config": {},
-        "repositories": {
-            "packagist": {
-                "type": "composer",
-                "url": "https://packagist.laravel-china.org"
-            }
-        }
-    }
-
-    ```
-**方法二：容器内使用composer命令**
-
-还有另外一种方式，就是进入容器，再执行`composer`命令，以PHP7容器为例：
-```bash
-docker exec -it php /bin/sh
-cd /www/localhost
-composer update
-```
     
-## 4.管理相关命令
-### 4.1 服务器启动和构建命令
+## 3.管理相关命令
+### 3.1 服务器启动和构建命令
 如需管理服务，请在命令后面加上服务器名称，例如：
 ```bash
 $ docker-compose up                         # 创建并且启动所有容器
@@ -133,7 +86,7 @@ $ docker-compose rm php                     # 删除并且停止php容器
 $ docker-compose down                       # 停止并删除容器，网络，图像和挂载卷
 ```
 
-### 4.2 liunx下添加快捷命令
+### 3.2 liunx下添加快捷命令
 在开发的时候，我们可能经常使用`docker exec -it`进入到容器中，把常用的做成命令别名是个省事的方法。
 
 首先，在主机中查看可用的容器：
@@ -156,6 +109,10 @@ alias dredis='docker exec -it redis /bin/sh'
 ```bash
 $ dphp
 ```
+
+************************************
+
+以下内容不使用PHP容器则不重要
 
 ## 5.使用Log日志
 
@@ -203,3 +160,56 @@ slow-query-log-file     = /var/lib/mysql/mysql.slow.log
 log-error               = /var/lib/mysql/mysql.error.log
 ```
 以上是mysql.conf中的日志文件的配置。
+
+
+
+### 5.2 PHP容器安装PHP扩展
+PHP的很多功能都是通过扩展实现，而安装扩展是一个略费时间的过程，
+所以，除PHP内置扩展外，在`env.sample`文件中我们仅默认安装少量扩展，
+如果要安装更多扩展，请打开你的`.env`文件修改如下的PHP配置，
+增加需要的PHP扩展：
+```bash
+PHP_EXTENSIONS=pdo_mysql,opcache,redis       # PHP 要安装的扩展列表，英文逗号隔开
+PHP54_EXTENSIONS=opcache,redis                 # PHP 5.4要安装的扩展列表，英文逗号隔开
+```
+然后重新build PHP镜像。
+```bash
+docker-compose build php
+```
+可用的扩展请看同文件的`env.sample`注释块说明。
+
+### 5.3 PHP容器使用composer
+**方法1：liunx主机中基于bashrc使用composer命令**
+1. 确定composer缓存的路径。比如，我的ENVA下载在`~/ENVA`目录，那composer的缓存路径就是`~/ENVA/data/composer`。
+2. 参考[bash.alias.sample](bash.alias.sample)示例文件，将对应 php composer 函数拷贝到主机的 `~/.bashrc`文件。
+    > 这里需要注意的是，示例文件中的`~/ENVA/data/composer`目录需是第一步确定的目录。
+3. 让文件起效：
+    ```bash
+    source ~/.bashrc
+    ```
+4. 在主机的任何目录下就能用composer了：
+    ```bash
+    cd ~/ENVA/www/
+    composer create-project yeszao/fastphp project --no-dev
+    ```
+5. （可选）第一次使用 composer 会在 `~/ENVA/data/composer` 目录下生成一个**config.json**文件，可以在这个文件中指定国内仓库，例如：
+    ```json
+    {
+        "config": {},
+        "repositories": {
+            "packagist": {
+                "type": "composer",
+                "url": "https://packagist.laravel-china.org"
+            }
+        }
+    }
+
+    ```
+**方法二：容器内使用composer命令**
+
+还有另外一种方式，就是进入容器，再执行`composer`命令，以PHP7容器为例：
+```bash
+docker exec -it php /bin/sh
+cd /www/localhost
+composer update
+```
