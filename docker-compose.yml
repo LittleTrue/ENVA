@@ -1,62 +1,64 @@
 version: "3"
 # 容器内连接宿主机相关服务
-# 1.宿主机执行ifconfig docker0(liunx)/ 得到inet就是要连接的ip地址
+# 1.liunx宿主机执行ifconfig docker0/ 得到inet就是要连接的ip地址
 # -- windows宿主机需要配置路由: https://blog.csdn.net/qq_33668030/article/details/102477820
-# 2.根据ip地址进行连接
+# 2.根据第一步得到的ip地址进行容器与宿主机的连接
 
 services:
-  nginx:
-    # 需要启动其他版本的PHP，比如PHP5.4，那就先在docker-compose.yml文件中删除PHP5.4前面的注释，再启动PHP5.4容器。
-    # PHP5.4启动后，打开Nginx 配置，修改fastcgi_pass的主机地址，由php改为php54, 最后，重启 Nginx 生效。
-    build:
-      context: ./services/nginx
-      args:
-        NGINX_VERSION: nginx:${NGINX_VERSION}
-        CONTAINER_PACKAGE_URL: ${CONTAINER_PACKAGE_URL}
-        NGINX_INSTALL_APPS: ${NGINX_INSTALL_APPS}
-    container_name: nginx
-    ports:
-      - "${NGINX_HTTP_HOST_PORT}:80"
-      - "${NGINX_HTTPS_HOST_PORT}:443"
-    volumes:
-      - ${SOURCE_DIR}:/www/:rw
-      - ${NGINX_SSL_CERTIFICATE_DIR}:/ssl:rw
-      - ${NGINX_CONFD_DIR}:/etc/nginx/conf.d/:rw
-      - ${NGINX_CONF_FILE}:/etc/nginx/nginx.conf:ro
-      - ${NGINX_FASTCGI_PHP_CONF}:/etc/nginx/fastcgi-php.conf:ro
-      - ${NGINX_FASTCGI_PARAMS}:/etc/nginx/fastcgi_params:ro
-      - ${NGINX_LOG_DIR}:/var/log/nginx/:rw
-    environment:
-      TZ: "$TZ"
-    networks:
-      - default
+#  # NGINX一般不推荐在容器中运行, 代理和网络多一层比较麻烦, 如果所在环境不支持NGINX特定版本安装则可以考虑
+#  nginx:
+#    # 需要启动其他版本的PHP，比如PHP5.4，那就先在docker-compose.yml文件中删除PHP5.4前面的注释，再启动PHP5.4容器。
+#    # PHP5.4启动后，打开Nginx 配置，修改fastcgi_pass的主机地址，由php改为php54, 最后，重启 Nginx 生效。
+#    build:
+#      context: ./services/nginx
+#      args:
+#        NGINX_VERSION: nginx:${NGINX_VERSION}
+#        CONTAINER_PACKAGE_URL: ${CONTAINER_PACKAGE_URL}
+#        NGINX_INSTALL_APPS: ${NGINX_INSTALL_APPS}
+#    container_name: nginx
+#    ports:
+#      - "${NGINX_HTTP_HOST_PORT}:80"
+#      - "${NGINX_HTTPS_HOST_PORT}:443"
+#    volumes:
+#      - ${SOURCE_DIR}:/www/:rw
+#      - ${NGINX_SSL_CERTIFICATE_DIR}:/ssl:rw
+#      - ${NGINX_CONFD_DIR}:/etc/nginx/conf.d/:rw
+#      - ${NGINX_CONF_FILE}:/etc/nginx/nginx.conf:ro
+#      - ${NGINX_FASTCGI_PHP_CONF}:/etc/nginx/fastcgi-php.conf:ro
+#      - ${NGINX_FASTCGI_PARAMS}:/etc/nginx/fastcgi_params:ro
+#      - ${NGINX_LOG_DIR}:/var/log/nginx/:rw
+#    environment:
+#      TZ: "$TZ"
+#    networks:
+#      - default
 
-  php:
-    build:
-      context: ./services/php
-      args:
-        # PHP + PHPFPM 一体化镜像  拓展开启依赖env-PHP_EXTENSIONS  重新build PHP镜像:docker-compose build php
-        PHP_VERSION: php:${PHP_VERSION}-fpm-alpine
-        CONTAINER_PACKAGE_URL: ${CONTAINER_PACKAGE_URL}
-        PHP_EXTENSIONS: ${PHP_EXTENSIONS}
-        TZ: "$TZ"
-    container_name: php
-    ports:
-      # 9000 -- PHP-FPM服务默认暴露给宿主机使用 
-      - "9000:9000"
-    volumes:
-      - ${SOURCE_DIR}:/www/:rw
-      - ${PHP_PHP_CONF_FILE}:/usr/local/etc/php/php.ini:ro
-      - ${PHP_FPM_CONF_FILE}:/usr/local/etc/php-fpm.d/www.conf:rw
-      - ${PHP_LOG_DIR}:/var/log/php
-      - ${DATA_DIR}/composer:/tmp/composer
-    cap_add:
-      - SYS_PTRACE
-    networks:
-      - default
+#  # PHP一般不推荐容器中运行, PHP安装比较简单, 没必要...
+#  php:
+#    build:
+#      context: ./services/php
+#      args:
+#        # PHP + PHPFPM 一体化镜像  拓展开启依赖env-PHP_EXTENSIONS  重新build PHP镜像:docker-compose build php
+#        PHP_VERSION: php:${PHP_VERSION}-fpm-alpine
+#        CONTAINER_PACKAGE_URL: ${CONTAINER_PACKAGE_URL}
+#        PHP_EXTENSIONS: ${PHP_EXTENSIONS}
+#        TZ: "$TZ"
+#    container_name: php
+#    ports:
+#      # 9000 -- PHP-FPM服务默认暴露给宿主机使用 
+#      - "9000:9000"
+#    volumes:
+#      - ${SOURCE_DIR}:/www/:rw
+#      - ${PHP_PHP_CONF_FILE}:/usr/local/etc/php/php.ini:ro
+#      - ${PHP_FPM_CONF_FILE}:/usr/local/etc/php-fpm.d/www.conf:rw
+#      - ${PHP_LOG_DIR}:/var/log/php
+#      - ${DATA_DIR}/composer:/tmp/composer
+#    cap_add:
+#      - SYS_PTRACE
+#    networks:
+#      - default
 
+  # 基于swoole的框架的运行容器搭建
   swoole_php:
-    # 基于swoole的框架的运行容器搭建
     build:
       context: ./services/swoole_php
       args:
@@ -70,7 +72,7 @@ services:
     container_name: swoole_php
     ports:
       # 9501 用于swoole等网络框架
-      - "${SWOOLE_PHP_PROTS}:9501"
+      - "${SWOOLE_PHP_PORTS}:9501"
     volumes:
       - ${SOURCE_DIR}:/opt/www/:rw
       - ${SWOOLE_PHP_PHP_CONF_FILE}:/etc/php7/php.ini:ro
@@ -307,17 +309,17 @@ services:
       - PMA_PORT=3306
       - TZ=$TZ
 
-#  phpredisadmin:
-#    image: erikdubbelboer/phpredisadmin:latest
-#    container_name: phpredisadmin
-#    ports:
-#      - "${REDISMYADMIN_HOST_PORT}:80"
-#    networks:
-#      - default
-#    environment:
-#      - REDIS_1_HOST=redis
-#      - REDIS_1_PORT=6379
-#      - TZ=$TZ
+  phpredisadmin:
+    image: erikdubbelboer/phpredisadmin:latest
+    container_name: phpredisadmin
+    ports:
+      - "${REDISMYADMIN_HOST_PORT}:80"
+    networks:
+      - default
+    environment:
+      - REDIS_1_HOST=redis
+      - REDIS_1_PORT=6379
+      - TZ=$TZ
 
 #  mongodb:
 #    image: mongo:${MONGODB_VERSION}
@@ -348,6 +350,28 @@ services:
 #    networks:
 #      - default
 
+  # ES 相关应用搭建
+  cerebro:
+    image: lmenezes/cerebro
+    container_name: cerebro
+    ports:
+      - "${CEREBRO_PORT}:9000"
+    networks:
+      - default
+    environment:
+      TZ: "$TZ"
+
+  elastichd:
+    image: containerize/elastichd
+    container_name: elastichd
+    ports:
+      - "${ELASTICHD_PORT}:9800"
+    networks:
+      - default
+    environment:
+      TZ: "$TZ"
+
+#  # ELK相关
 #  elasticsearch:
 #    build:
 #      context: ./services/elasticsearch
