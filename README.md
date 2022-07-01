@@ -45,27 +45,6 @@ PHP代码放在nginx中配置的文件目录`./www/localhost/index.php`。
 php文件也是放入php+fpm容器内才能正常运行, 因为请求已经通过9000转发进入容器内部处理了, 容器需要这些文件。
 
 
-
-## 3.PHP和扩展
-### 3.1 切换Nginx使用的PHP版本
-首先，需要启动其他版本的PHP，比如PHP5.4，那就先在`docker-compose.yml`文件中删除PHP5.4前面的注释，再启动PHP5.4容器。
-
-PHP5.4启动后，打开Nginx 配置，修改`fastcgi_pass`的主机地址，由`php`改为`php54`，如下：
-```
-    fastcgi_pass   php:9000;
-```
-为：
-```
-    fastcgi_pass   php54:9000;
-```
-其中 `php` 和 `php54` 是`docker-compose.yml`文件中服务器的名称。
-
-最后，**重启 Nginx** 生效。
-```bash
-$ docker exec -it nginx nginx -s reload
-```
-这里两个`nginx`，第一个是容器名，第二个是容器中的`nginx`程序。
-
     
 ## 3.管理相关命令
 ### 3.1 服务器启动和构建命令
@@ -110,15 +89,11 @@ alias dredis='docker exec -it redis /bin/sh'
 $ dphp
 ```
 
-************************************
-
-以下内容不使用PHP容器则不重要
-
-## 5.使用Log日志
+## 4.使用Log日志
 
 Log文件生成的位置依赖于conf下各log配置的值。
 
-### 5.1 Nginx日志
+### 4.1 Nginx日志
 Nginx日志是我们用得最多的日志，所以我们单独放在根目录`log`下。
 
 `log`会目录映射Nginx容器的`/var/log/nginx`目录，所以在Nginx配置文件中，需要输出log的位置，我们需要配置到`/var/log/nginx`目录，如：
@@ -127,7 +102,7 @@ error_log  /var/log/nginx/nginx.localhost.error.log  warn;
 ```
 
 
-### 5.2 PHP-FPM日志
+### 4.2 PHP-FPM日志
 大部分情况下，PHP-FPM的日志都会输出到Nginx的日志中，所以不需要额外配置。
 
 另外，建议直接在PHP中打开错误日志：
@@ -153,7 +128,7 @@ ini_set('display_errors', 'on');
     ```
 3. 重启PHP-FPM容器。
 
-### 5.3 MySQL日志
+### 4.3 MySQL日志
 因为MySQL容器中的MySQL使用的是`mysql`用户启动，它无法自行在`/var/log`下的增加日志文件。所以，我们把MySQL的日志放在与data一样的目录，即项目的`mysql`目录下，对应容器中的`/var/lib/mysql/`目录。
 ```bash
 slow-query-log-file     = /var/lib/mysql/mysql.slow.log
@@ -162,8 +137,30 @@ log-error               = /var/lib/mysql/mysql.error.log
 以上是mysql.conf中的日志文件的配置。
 
 
+************************************
 
-### 5.2 PHP容器安装PHP扩展
+## 以下内容不使用PHP容器则不重要
+
+### 1、切换Nginx使用的PHP版本
+首先，需要启动其他版本的PHP，比如PHP5.4，那就先在`docker-compose.yml`文件中删除PHP5.4前面的注释，再启动PHP5.4容器。
+
+PHP5.4启动后，打开Nginx 配置，修改`fastcgi_pass`的主机地址，由`php`改为`php54`，如下：
+```
+    fastcgi_pass   php:9000;
+```
+为：
+```
+    fastcgi_pass   php54:9000;
+```
+其中 `php` 和 `php54` 是`docker-compose.yml`文件中服务器的名称。
+
+最后，**重启 Nginx** 生效。
+```bash
+$ docker exec -it nginx nginx -s reload
+```
+这里两个`nginx`，第一个是容器名，第二个是容器中的`nginx`程序。
+
+### 2、PHP容器安装PHP扩展
 PHP的很多功能都是通过扩展实现，而安装扩展是一个略费时间的过程，
 所以，除PHP内置扩展外，在`env.sample`文件中我们仅默认安装少量扩展，
 如果要安装更多扩展，请打开你的`.env`文件修改如下的PHP配置，
@@ -178,7 +175,7 @@ docker-compose build php
 ```
 可用的扩展请看同文件的`env.sample`注释块说明。
 
-### 5.3 PHP容器使用composer
+### 3、PHP容器使用composer
 **方法1：liunx主机中基于bashrc使用composer命令**
 1. 确定composer缓存的路径。比如，我的ENVA下载在`~/ENVA`目录，那composer的缓存路径就是`~/ENVA/data/composer`。
 2. 参考[bash.alias.sample](bash.alias.sample)示例文件，将对应 php composer 函数拷贝到主机的 `~/.bashrc`文件。
