@@ -87,9 +87,9 @@ services:
 #    tty: true
 
   # 基于swoole的框架的运行容器搭建
-  swoole_php:
+  php_swoole:
     build:
-      context: ./services/swoole_php
+      context: ./services/php_swoole
       args:
         # PHP在构建镜像中固定7.4, 使用hyperf/hyperf:7.4-alpine-v3.14-base
         SWOOLE_VERSION: ${SWOOLE_VERSION}
@@ -98,7 +98,7 @@ services:
     # stdin_open / tty 交互式进行, 进入后再根据需要编辑容器/操作特定项目/行为, 防止无常驻自动退出
     stdin_open: true
     tty: true
-    container_name: swoole_php
+    container_name: php_swoole
     ports:
       # 9501 用于swoole等网络框架
       - "${SWOOLE_PHP_PORTS}:9501"
@@ -262,7 +262,7 @@ services:
 #       --auth
 
 #  # mongodb的管控界面
-#  adminmongo:
+#  mongodb-adminmongo:
 #    image: mrvautin/adminmongo
 #    container_name: adminmongo
 #    ports:
@@ -353,7 +353,7 @@ services:
       - default
 
   ## MYSQL管理界面
-  phpmyadmin:
+  mysql-phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest
     container_name: phpmyadmin
     ports:
@@ -369,7 +369,7 @@ services:
       - PMA_PORT=3306
       - TZ=$TZ
 
-  phpredisadmin:
+  redis-phpredisadmin:
     image: erikdubbelboer/phpredisadmin:latest
     container_name: phpredisadmin
     ports:
@@ -383,7 +383,7 @@ services:
       - TZ=$TZ
 
   # ES 相关应用搭建
-  cerebro:
+  elasticsearch-cerebro:
     image: lmenezes/cerebro
     container_name: cerebro
     ports:
@@ -393,7 +393,7 @@ services:
     environment:
       TZ: "$TZ"
 
-  elastichd:
+  elasticsearch-elastichd:
     image: containerize/elastichd
     container_name: elastichd
     ports:
