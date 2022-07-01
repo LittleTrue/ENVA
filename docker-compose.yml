@@ -12,8 +12,8 @@ version: "3"
 # www录用于部分WEB/通信引擎容器将项目关联进去运行。
 # 构建过程: 
 # Windows下CD到本项目根目录
-# docker-compose build -- 构建所有
-# docker-compose up  -- 构建所有并运行
+# docker compose up --build -- 不使用缓存重新构建镜像并运行容器
+# docker-compose up  -- 构建所有镜像并运行容器
 # docker-compose up <指定的服务名> <指定的服务名> <指定的服务名> --构建部分并运行
 # docker-compose up --force-recreate --no-deps -d <指定的服务名>  --重新构建并运行
 
