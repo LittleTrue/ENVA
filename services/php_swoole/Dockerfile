@@ -5,7 +5,10 @@
 # @contact  group@hyperf.io
 # @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
 
-FROM hyperf/hyperf:7.4-alpine-v3.14-base
+FROM hyperf/hyperf:7.4-alpine-v3.11-base
+# FROM hyperf/hyperf:7.4-alpine-v3.14-swoole 不需要额外定制可用
+# https://hub.docker.com/layers/hyperf/hyperf/hyperf/7.4-alpine-v3.14-swoole/images/sha256-eeed753f2e6cb58f210be3c4177d5fbdd0458752f0d355bc30bf745181781ce9?context=explore
+# swoole编译参数--enable-trace-log 会导致async-queue异常
 
 LABEL maintainer="Hyperf Developers <group@hyperf.io>" version="1.0" license="MIT"
 
@@ -16,8 +19,8 @@ ARG SWOOLE_PHP_COMPOSER_VERSION
 ##
 # ---------- env settings ----------
 ##
-ENV SW_VERSION=${SWOOLE_VERSION:-"v4.7.1"} \
-    COMPOSER_VERSION=${SWOOLE_PHP_COMPOSER_VERSION:-"2.0.2"} \
+ENV SW_VERSION=${SWOOLE_VERSION:-"v4.8.5"} \
+    COMPOSER_VERSION=${SWOOLE_PHP_COMPOSER_VERSION:-"2.3.5"} \
     #  install and remove building packages
     PHPIZE_DEPS="autoconf dpkg-dev dpkg file g++ gcc libc-dev make php7-dev php7-pear pkgconf re2c pcre-dev pcre2-dev zlib-dev libtool automake"
 
@@ -44,7 +47,7 @@ RUN set -ex \
     && ( \
         cd swoole \
         && phpize \
-        && ./configure --enable-sockets --enable-openssl --enable-http2 --enable-swoole-curl --enable-swoole-json --enable-trace-log \
+        && ./configure --enable-sockets --enable-openssl --enable-http2 --enable-swoole-curl --enable-swoole-json  \
         && make -s -j$(nproc) && make install \
     ) \
     && echo "memory_limit=1G" > /etc/php7/conf.d/00_default.ini \
