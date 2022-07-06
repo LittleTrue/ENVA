@@ -16,7 +16,7 @@ ARG SWOOLE_PHP_COMPOSER_VERSION
 ##
 # ---------- env settings ----------
 ##
-ENV SW_VERSION=${SWOOLE_VERSION:-"v4.7.1"} \
+ENV SW_VERSION=${SWOOLE_VERSION:-"v4.8.9"} \
     COMPOSER_VERSION=${SWOOLE_PHP_COMPOSER_VERSION:-"2.0.2"} \
     #  install and remove building packages
     PHPIZE_DEPS="autoconf dpkg-dev dpkg file g++ gcc libc-dev make php7-dev php7-pear pkgconf re2c pcre-dev pcre2-dev zlib-dev libtool automake"
