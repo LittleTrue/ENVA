@@ -365,6 +365,7 @@ services:
       - default
     restart: always
     environment:
+      - UPLOAD_LIMIT=${PHPMYADMIN_UPLOAD_LIMIT}
       - PMA_HOST=mysql
       - PMA_PORT=3306
       - TZ=$TZ
