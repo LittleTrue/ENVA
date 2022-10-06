@@ -2,18 +2,17 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-echo '<h1 style="text-align: center;">欢迎ENVA ！</h1>';
+echo '<h1 style="text-align: center;">欢迎ENVA！</h1>';
 echo '<h2>版本信息</h2>';
 
 echo '<ul>';
-echo '<li>PHP版本：', PHP_VERSION, '</li>';
-echo '<li>Nginx版本：', $_SERVER['SERVER_SOFTWARE'], '</li>';
+echo '<li>当前环境PHP版本：', PHP_VERSION, '</li>';
 echo '<li>MySQL服务器版本：', getMysqlVersion(), '</li>';
 echo '<li>Redis服务器版本：', getRedisVersion(), '</li>';
 echo '<li>MongoDB服务器版本：', getMongoVersion(), '</li>';
 echo '</ul>';
 
-echo '<h2>已安装扩展</h2>';
+echo '<h2>当前环境PHP已安装扩展</h2>';
 printExtensions();
 
 
