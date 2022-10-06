@@ -84,6 +84,7 @@ services:
   ## 1、 PHP + PHPFPM 一体化镜像  拓展开启依赖env-PHP_EXTENSIONS  重新build PHP镜像:docker-compose build php
   ## 2、基于swoole的框架的运行容器搭建, 放入localhost目录后执行进入容器执行即可。
   php_swoole:
+    container_name: php_swoole
     build:
       context: ./services/php_swoole
       args:
@@ -94,7 +95,6 @@ services:
     # stdin_open / tty 交互式进行, 进入后再根据需要编辑容器/操作特定项目/行为, 防止无常驻自动退出
     stdin_open: true
     tty: true
-    container_name: php_swoole
     ports:
       # 9501 用于swoole等网络框架
       - "${SWOOLE_PHP_PORTS}:9501"
@@ -109,22 +109,20 @@ services:
   php56:
     container_name: php56
     build:
-      context: ./services/php
+      context: ./services/php56
       args:
         PHP_VERSION: php:${PHP56_VERSION}-fpm-alpine
         CONTAINER_PACKAGE_URL: ${CONTAINER_PACKAGE_URL}
         PHP_EXTENSIONS: ${PHP56_EXTENSIONS}
         TZ: "$TZ"
     ports:
-      # 9000 -- PHP-FPM服务默认暴露给宿主机使用 
-      - "9000:9000"
+      - "${PHP56FPM_PORTS}:9000"
     volumes:
       - ${SOURCE_DIR}:/www/:rw
       - ${PHP56_PHP_CONF_FILE}:/usr/local/etc/php/php.ini:ro
       - ${PHP56_FPM_CONF_FILE}:/usr/local/etc/php-fpm.d/www.conf:rw
       - ${PHP56_LOG_DIR}:/var/log/php
       - ${DATA_DIR}/composer:/tmp/composer
-    restart: always
     cap_add:
       - SYS_PTRACE
     networks:
@@ -140,8 +138,7 @@ services:
         PHP_EXTENSIONS: ${PHP71_EXTENSIONS}
         TZ: "$TZ"
     ports:
-      # 9000 -- PHP-FPM服务默认暴露给宿主机使用 
-      - "9000:9000"
+      - "${PHP71FPM_PORTS}:9000"
     volumes:
       - ${SOURCE_DIR}:/www/:rw
       - ${PHP71_PHP_CONF_FILE}:/usr/local/etc/php/php.ini:ro
@@ -153,29 +150,27 @@ services:
     networks:
       - default
 
-  #php80:
-  #  build:
-  #    context: ./services/php80
-  #    args:
-  #      PHP_VERSION: php:${PHP80_VERSION}-fpm-alpine3.13
-  #      CONTAINER_PACKAGE_URL: ${CONTAINER_PACKAGE_URL}
-  #      PHP_EXTENSIONS: ${PHP80_EXTENSIONS}
-  #      TZ: "$TZ"
-  #  container_name: php80
-  #  ports:
-  #    # 9000 -- PHP-FPM服务默认暴露给宿主机使用 
-  #    - "9000:9000"
-  #  volumes:
-  #    - ${SOURCE_DIR}:/www/:rw
-  #    - ${PHP80_PHP_CONF_FILE}:/usr/local/etc/php/php.ini:ro
-  #    - ${PHP80_FPM_CONF_FILE}:/usr/local/etc/php-fpm.d/www.conf:rw
-  #    - ${PHP80_LOG_DIR}:/var/log/php
-  #    - ${DATA_DIR}/composer:/tmp/composer
-  #  restart: always
-  #  cap_add:
-  #    - SYS_PTRACE
-  #  networks:
-  #    - default
+  php80:
+    build:
+      context: ./services/php80
+      args:
+        PHP_VERSION: php:${PHP80_VERSION}-fpm-alpine3.13
+        CONTAINER_PACKAGE_URL: ${CONTAINER_PACKAGE_URL}
+        PHP_EXTENSIONS: ${PHP80_EXTENSIONS}
+        TZ: "$TZ"
+    container_name: php80
+    ports:
+      - "${PHP80FPM_PORTS}:9000"
+    volumes:
+      - ${SOURCE_DIR}:/www/:rw
+      - ${PHP80_PHP_CONF_FILE}:/usr/local/etc/php/php.ini:ro
+      - ${PHP80_FPM_CONF_FILE}:/usr/local/etc/php-fpm.d/www.conf:rw
+      - ${PHP80_LOG_DIR}:/var/log/php
+      - ${DATA_DIR}/composer:/tmp/composer
+    cap_add:
+      - SYS_PTRACE
+    networks:
+      - default
 
 #  ## ************************************ MYSQL相关和管理
 #  mysql8:
