@@ -269,6 +269,7 @@ services:
 
 
   # mongodb的管控界面
+  # monogb连接地址url: mongodb://root:123456@宿主机ip:27017
   mongodb-adminmongo:
     image: mrvautin/adminmongo
     container_name: mongodb-adminmongo
