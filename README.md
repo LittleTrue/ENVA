@@ -41,6 +41,7 @@ $ docker-compose up -d    # 创建并且后台运行方式启动所有容器
 PHP代码放在nginx中配置的文件目录`./www/localhost/index.php`。
 
 5.(特殊使用) nginx使用宿主机应用, php+fpm使用docker内部。
+详细可参考: www下Readme配置
 需要注意nginx中server或location配置的root都是针对php+fpm容器路径而言的, 
 php文件也是放入php+fpm容器内才能正常运行, 因为请求已经通过9000转发进入容器内部处理了, 容器需要这些文件。
 
