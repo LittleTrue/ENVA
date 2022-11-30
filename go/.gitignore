@@ -1,0 +1,6 @@
+*
+!.gitignore
+!go1.18.8.windows-amd64.zip
+!环境变量配置.txt
+!增加新拓展或其他版本go新打压缩包.txt
+!x86_64-8.1.0-release-posix-seh-rt_v6-rev0.7z
