@@ -1,12 +1,16 @@
 ## 一、环境变量配置
 高级系统设置 -- 高级 - 环境变量系统环境变量
 
+前置工作： 
+1、解压php目录下的压缩包【7.1.12 或者7.2.26】并配置extension_dir和path, 其他PHP环境则自行下载解压, 
+2、配置php.ini中extension_dir为ext目录此时的绝对路径
 ### 新建 - 系统变量
 ```bash
 // 替换为你clone本项目的根目录地址
 ENVA_PATH  => G:\ENVA  
 
-// 源码解压位置 和 工作目录配置
+// 进行GO源码解压位置 和 工作目录配置
+PHP_PATH   => %ENVA_PATH%\php\php7.1.12
 GOROOT  =>  %ENVA_PATH%\go\go
 GOPATH  =>  %ENVA_PATH%\go\workspace
 ```
@@ -18,6 +22,9 @@ GOPATH  =>  %ENVA_PATH%\go\workspace
 //FPM变量增加
 %ENVA_PATH%\nginx-fpm-php
 
+//PHP变量
+%PHP_PATH%
+
 //GO编译器和链接器的安装位置
 %GOPATH%\bin
 %GOROOT%\bin
@@ -27,30 +34,14 @@ GOPATH  =>  %ENVA_PATH%\go\workspace
 ```
 
 ## 二、解压源码和安装环境软件
-### 1、FPM 环境相关
+### 1、自动生成FPM 环境相关
 #### 执行脚本fpm.bat生成nginx+fpm
 ```bash
-// 脚本解释
-// 解压 /nginx-fpm-php/nginx1.8.1.zip  -> 本项目根目录重命名为nginx
-// 解压 /nginx-fpm-php/RunHiddenConsole.zip  -> 本项目根目录 /nginx-fpm-php/下
-// 复制 /nginx-fpm-php/conf文件夹复制进入解压出来的nginx下conf目录下 [后续自己项目的sites.d文件夹可以自己定义]
-
-./fpm.bat
+// 运行脚本, 注意生成nginx后中conf文件夹下区分不同办公环境的sites.d目录 , 后续自己项目的sites.d文件夹可以自己参考着定义
+./nginx-fpm.bat
 ```
 
-
-### 2、解压PHP并配置extension_dir和path
-在PHP目录中解压需要预留的PHP版本【7.1.12 或者7.2.26】需要其他PHP环境则自行下载解压, 配置php.ini中extension_dir为绝对路径。
-
-```php
-//环境变量 以解压7.1.12为例
-//新建 - 系统变量
-PHP_PATH   => %ENVA_PATH%\php\php7.1.12
-
-//PATH加入以下变量
-%PHP_PATH%
-```
-### 3、GO环境相关
+### 2、自行配置GO环境相关
 https://studygolang.com/dl 下载推荐1.3 和 1.8 解压到本项目go目录下, 命名为go文件夹
 
 
