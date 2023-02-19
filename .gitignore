@@ -4,5 +4,5 @@ nohup.out
 docker-compose.yml.*
 www/*
 !www/localhost/
-!www/nginx+docker多版本php配置示例.md
+!www/(PHP在容器中)nginx+docker多版本php配置示例.md
 !www/snapshot.png
