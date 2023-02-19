@@ -9,8 +9,10 @@
 // 替换为你clone本项目的根目录地址
 ENVA_PATH  => G:\ENVA  
 
-// 进行GO源码解压位置 和 工作目录配置
+// 新增PHP环境变量以解压了【php7.1.12】为例子
 PHP_PATH   => %ENVA_PATH%\php\php7.1.12
+
+// 进行GO源码解压位置 和 工作目录配置
 GOROOT  =>  %ENVA_PATH%\go\go
 GOPATH  =>  %ENVA_PATH%\go\workspace
 ```
@@ -45,7 +47,7 @@ GOPATH  =>  %ENVA_PATH%\go\workspace
 https://studygolang.com/dl 下载推荐1.3 和 1.8 解压到本项目go目录下, 命名为go文件夹
 
 
-#### 解压mingw64成为GCC环境
+#### 解压mingw64.7z 成为GCC环境
 解压go/mingw64.7z 到根目录成为mingw64
 
 
