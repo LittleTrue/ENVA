@@ -1,7 +1,6 @@
 @echo off
-set PHP_VERSION=7.1.12
-set ENV_PATH=g:ENVA
-set FPM_PATH=%ENV_PATH%\php\php%PHP_VERSION%
+set FPM_PATH=%PHP_PATH%
+set ENV_PATH=%ENVA_PATH%
 
 ECHO FLUSH DNS END...
 ipconfig /flushdns

@@ -5,4 +5,4 @@
 !workspace/bin
 !workspace/pkg
 !GO-ENV配置.md
-!mingw64.7z
+!mingw-w64-install.exe

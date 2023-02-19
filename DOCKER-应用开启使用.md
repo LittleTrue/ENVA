@@ -1,7 +1,3 @@
-ENVA (ENVironment  Arrange ) 环境集中安排中心
-
-是一款基于DOCKER的全功能的应用程序一键安装程序
-
 ## 1.项目总体目录结构
 
 ```
@@ -31,8 +27,7 @@ ENVA (ENVironment  Arrange ) 环境集中安排中心
 4. 在安装好windows-docker-compose的基础上启动项目：
 
 ```java
-# 在当前项目的目录下创建/管理
-# 更多管理命令往下看
+# 直接运行创建默认的应用容器
 $ docker-compose up                         # 创建并且启动所有容器
 ```
 
