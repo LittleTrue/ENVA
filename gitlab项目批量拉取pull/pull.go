@@ -69,7 +69,7 @@ var (
 const (
 	GoPath        = "G:/workspace/src/code.inke.cn/" // 拉取代码的目标目录
 	//GoPath        = "G:/ENVA/go/workspace/src/code.inke.cn/" // 拉取代码的目标目录
-	GitlabToken   = "oabvqhgAHZH-Py2vbEYJ"           // gitlabToken获取 从gitlab setting中的Access Tokens获取
+	GitlabToken   = ""           // gitlabToken获取 从gitlab setting中的Access Tokens获取
 	GitlabAddress = "code.inke.cn"
 )
 
