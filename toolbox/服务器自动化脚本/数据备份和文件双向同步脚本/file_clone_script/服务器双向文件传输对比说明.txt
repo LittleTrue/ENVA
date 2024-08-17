@@ -1,0 +1,48 @@
+同步场景:
+	云服务器和地面服务器, 
+	两端均有文件产生或者删除, 
+	需要动态判断哪些是新增的及时复制到另外一个服务器上。
+
+
+方案准备:
+	rsync 命令 + php 脚本
+	
+# 更新并且不覆盖的情况
+rsync -azutp /root/client/   root@202.112.23.12:/home/work/  
+
+频繁更新的所有文件目录(5分钟一次):
+	/var/www/html/xuanxijia/uploadFiles/Activity
+	/var/www/html/xuanxijia/uploadFiles/attachment
+	/var/www/html/xuanxijia/uploadFiles/goods
+	/var/www/html/xuanxijia/uploadFiles/service
+	/var/www/html/xuanxijia/xxj/src/vendor/php/upload
+	
+一天更新一次的文件目录:
+	/var/www/html/xuanxijia/uploadFiles/brand
+	/var/www/html/xuanxijia/uploadFiles/config/xxj
+	/var/www/html/xuanxijia/uploadFiles/userlicence
+	/var/www/html/xuanxijia/uploadFiles/avatar
+	/var/www/html/xuanxijia/uploadFiles/supplierlicence
+	/var/www/html/xuanxijia/xxj/images
+	/var/www/html/xuanxijia/Log/xxj
+	
+	
+# 传输基于:
+	php文件扫描和文件修改时间判断
+	expect 脚本自动文件传输交互以及数组传入
+	定时任务在某一时间内定频执行。
+	
+#计划任务设计
+	时间段5:00AM--24:00AM,双方服务器都设计间隔5分钟执行一次5min级同步
+	时间段0:00AM--2:00AM,双方服务器都设计间隔10分钟执行一次10min级同步
+	每天凌晨3:30AM执行day级同步
+	
+	计划任务编写:
+	10 2 * * * php /var/file_clone_script/scan_file_update_day.php
+	*/5 5-23 * * * php /var/file_clone_script/scan_file_update_min.php
+	*/10 0-2 * * * php /var/file_clone_script/scan_file_update_10min.php
+	
+# 注意:
+	由于传输是双向的,并且每值5分钟会在同一时间点触发逻辑,为了避免扫描各自文件时服务器带来差异,其中一个
+	提前完成传输并影响另外一个的扫描结果,在扫描完成后,要共同执行20s的休眠时间。
+	

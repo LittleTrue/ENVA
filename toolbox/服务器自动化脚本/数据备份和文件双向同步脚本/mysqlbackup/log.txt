@@ -1,0 +1,10 @@
+定时备份脚本
+版本1.0  
+add by guo 2018年11月4日
+mysqldump命令+ 定时任务crontab进行备份单个数据库的数据和结构(数据库名commodity):
+
+mysqldump -u root -h 127.0.0.1 -pLIZHIFENG2212 commodity> /var/mysqlbackup/sql_backup/commodity.sql
+0 6 * * * /var/mysqlbackup/mysql_dump_script.sh ///每天早上6点进行备份
+
+************************************以下为备份执行日志消息:
+

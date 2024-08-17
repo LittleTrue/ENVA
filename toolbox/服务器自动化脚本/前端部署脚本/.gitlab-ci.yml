@@ -1,0 +1,46 @@
+# 简单逻辑, 更新转运的正式环境(唯一一个环境, 不额外部署, 作为master)
+stages:
+  # 执行以下进行代码的更新
+  - build
+
+variables:
+  # 默认传参(固定后五项内容由CI流程传入): 
+  # build_tool: 前端项目定制
+  # project_path: 部署人员确认
+  # build_parameter: 前端项目定制
+  # product: CI_PROJECT_NAME 
+  # git_path: CI_PROJECT_PATH
+  # branch: CI_COMMIT_REF_NAME
+  # the_trigger: GITLAB_USER_NAME
+  # the_commit: CI_COMMIT_TITLE
+  SH_PARAM_DEFAULT: "$CI_PROJECT_NAME $CI_PROJECT_PATH $CI_COMMIT_REF_NAME $GITLAB_USER_NAME $CI_COMMIT_TITLE"
+  # (部署脚本) 统一环境部署脚本路径
+  PROJECT_BUILD_SH: "/data/front_ci_center_script.sh"
+  # (前端确认) 项目包管理工具: npm / yarn
+  PROJECT_BUILD_TOOL: "npm"
+  # 部署脚本在本地生成的dist目录 该目录在目标服务器需要赋予777权限
+  PROJECT_BUILD_GENERATE: "/data/ciproject/${CI_PROJECT_NAME}_${CI_COMMIT_REF_NAME}/dist/*"
+
+  # 各个环境 ---
+  # 项目所在正式服务器和相关的目录
+  ## 正式环境 不需要则填写 empty
+  PRO_PROJECT_PATH: "empty"
+  ## 正式环境打包参数 不需要则填写 empty
+  PRO_PROJECT_BUILD_PARAM: "empty"
+  # 项目所在正式服务器和相关的目录
+  PRO_SERVE_IP: "120.79.114.161"    
+  PRO_SERVE_UNAME: "gitlab-runner"
+  PRO_REMOTE_PROJECT_PATH: "/var/www/html/HaiTaoWan/html" 
+
+# 更新转运的正式环境
+build-deploy-prod-env:
+  stage: build
+  only:
+    - master    
+  tags:
+    - common
+  script:
+    - echo "=============== 构建前端项目  ==============="
+    - sudo $PROJECT_BUILD_SH $PROJECT_BUILD_TOOL $PRO_PROJECT_PATH $PRO_PROJECT_BUILD_PARAM $SH_PARAM_DEFAULT
+    - echo "=============== 部署到远程服务器  ==============="
+    - scp -r $PROJECT_BUILD_GENERATE gitlab-runner@$PRO_SERVE_IP:$PRO_REMOTE_PROJECT_PATH

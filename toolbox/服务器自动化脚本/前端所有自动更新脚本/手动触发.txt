@@ -1,0 +1,9 @@
+如果急着更新就手动触发:
+
+47.107.176.36服务器:
+洋葱POS测试环境: /data/scripts/onion_pos_dev.sh
+幸福POS测试环境:/data/scripts/xftime_pos_dev.sh
+
+47.107.65.108服务器:
+TCPOS测试环境:  /data/scripts/kk_pos_dev.sh
+KKPAY测试环境: /data/scripts/base_deploy_master.sh

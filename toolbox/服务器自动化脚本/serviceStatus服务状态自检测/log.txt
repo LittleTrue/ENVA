@@ -1,0 +1,9 @@
+定时检查各项服务运行状态
+版本1.0  
+add by guo 2018年12月21日
+
+每半个小时运行检查
+使用行列截取字符串功能来截取systemctl status httpd.service 的输出信息的某些区域状态字符串
+https://www.cnblogs.com/YankaiJY/p/8831394.html
+
+************************************以下为执行日志消息:
