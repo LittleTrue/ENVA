@@ -36,6 +36,10 @@ func main() {
 			for _, group := range getGroupId(phxGroupUrl) {
 				getNext(group.Id)
 			}
+		case "readom":
+			for _, group := range getGroupId(phxGroupUrl) {
+				getNext(group.Id)
+			}
 		}
 
 	}
@@ -69,8 +73,9 @@ var (
 const (
 	GoPath        = "G:/workspace/src/code.inke.cn/" // 拉取代码的目标目录
 	//GoPath        = "G:/ENVA/go/workspace/src/code.inke.cn/" // 拉取代码的目标目录
-	GitlabToken   = ""           // gitlabToken获取 从gitlab setting中的Access Tokens获取
+	GitlabToken   = "oabvqhgAHZH-Py2vbEYJ"           // gitlabToken获取 从gitlab setting中的Access Tokens获取
 	GitlabAddress = "code.inke.cn"
+	Branch        = "master"   // 指定切到哪个分支进行拉取  master test, 留空则默认当前所在的分支
 )
 
 func getGroupId(url string) []*groupInfo {
@@ -111,6 +116,17 @@ func getNext(groupId int) {
 			if err != nil {
 				command = fmt.Sprintf("git clone %s %s", v.Url, path)
 			} else {
+				// 如果有指定分支, 则先进行分支切换
+				if len(Branch) != 0 {
+					commandPre := fmt.Sprintf("git -C \"%s\" checkout  %s", path, Branch)
+					cmd := exec.Command("powershell", "-c", commandPre)
+					cmd.Stdout = &out
+					cmd.Stderr = &stderr
+					fmt.Println(" 切换分支", Branch, v.Name, "...")
+					if err = cmd.Run(); err != nil {
+						fmt.Println("切换分支失败 ", v.Name, "...")
+					}
+				}
 				command = fmt.Sprintf("git -C \"%s\" pull", path)
 			}
 			// liunx下为/bin/bash, windows下为 powershell
