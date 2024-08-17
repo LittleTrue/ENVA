@@ -1,0 +1,3 @@
+* * * * * curl http://posapi.kjgoods.com/admin/index/queryAllPayBail
+* * * * * sleep 20; curl http://posapi.kjgoods.com/admin/index/queryAllPayBail
+* * * * * sleep 40; curl http://posapi.kjgoods.com/admin/index/queryAllPayBail
